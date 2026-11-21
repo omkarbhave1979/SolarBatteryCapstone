@@ -1,0 +1,27 @@
+{
+  "label": "Illustrative AUD retail and battery scenario",
+  "interval_minutes": 30,
+  "tariff": {
+    "clock": "Australia/Sydney",
+    "currency": "AUD",
+    "default_import_per_kwh": 0.30,
+    "peak_import_per_kwh": 0.48,
+    "peak_weekdays": [1, 2, 3, 4, 5],
+    "peak_start_inclusive": "16:00",
+    "peak_end_exclusive": "21:00",
+    "export_credit_per_kwh": 0.07
+  },
+  "battery": {
+    "capacity_kwh": 10.0,
+    "minimum_soc_kwh": 1.0,
+    "maximum_soc_kwh": 9.0,
+    "initial_soc_kwh": 5.0,
+    "charge_ac_limit_kw": 5.0,
+    "discharge_ac_limit_kw": 5.0,
+    "charge_efficiency": 0.95,
+    "discharge_efficiency": 0.95,
+    "terminal_soc_policy": "equal_to_initial",
+    "grid_charging": true,
+    "battery_export": false
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "years": {
+    "2010": {
+      "households": 300,
+      "households_with_controlled_load_rows": 139,
+      "households_with_multiple_postcode_or_capacity_pairs": [],
+      "source_calendar_days": 365,
+      "source_dates_with_dst_transitions_excluded": [
+        "2010-10-03",
+        "2011-04-03"
+      ],
+      "counts": {
+        "GC": 109500,
+        "CL": 50735,
+        "GG": 109500
+      },
+      "usable_intervals": 5227200,
+      "households_complete_after_dst_exclusions": 300,
+      "sample_rows": 0
+    },
+    "2011": {
+      "households": 300,
+      "households_with_controlled_load_rows": 139,
+      "households_with_multiple_postcode_or_capacity_pairs": [],
+      "source_calendar_days": 366,
+      "source_dates_with_dst_transitions_excluded": [
+        "2011-10-02",
+        "2012-04-01"
+      ],
+      "counts": {
+        "CL": 50704,
+        "GC": 109800,
+        "GG": 109800,
+        "quality:NA": 100,
+        "flagged_complete_channel_days_excluded": 52,
+        "missing_CL_days": 170
+      },
+      "usable_intervals": 5230992,
+      "households_complete_after_dst_exclusions": 294,
+      "sample_rows": 0
+    },
+    "2012": {
+      "households": 300,
+      "households_with_controlled_load_rows": 138,
+      "households_with_multiple_postcode_or_capacity_pairs": [],
+      "source_calendar_days": 365,
+      "source_dates_with_dst_transitions_excluded": [
+        "2012-10-07",
+        "2013-04-07"
+      ],
+      "counts": {
+        "CL": 49719,
+        "GC": 109419,
+        "GG": 109419,
+        "quality:NA": 431,
+        "missing_GG_days": 81,
+        "missing_GC_days": 81,
+        "missing_CL_days": 651,
+        "flagged_complete_channel_days_excluded": 284
+      },
+      "usable_intervals": 5182368,
+      "households_complete_after_dst_exclusions": 260,
+      "sample_rows": 2688
+    }
+  },
+  "archive_sha256": "5a766f52b6c8b3b72730380f4422e478934bc94640a4b089dd0e0e3c055c5d82",
+  "archive_bytes": 57038633
+}

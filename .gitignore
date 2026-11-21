@@ -1,0 +1,14 @@
+data/raw/
+data/processed/*
+!data/processed/ausgrid_intervals.csv.gz
+results/*
+!results/.gitkeep
+__pycache__/
+.DS_Store
+.venv/
+.cdsapirc
+
+!results/assignment_20_1_full.json
+.ipynb_checkpoints/
+notebooks/assignment_20_1_sample.ipynb
+notebooks/assignment_20_1_reproduced.ipynb

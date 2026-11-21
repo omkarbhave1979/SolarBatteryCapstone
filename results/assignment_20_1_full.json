@@ -1,0 +1,137 @@
+{
+  "dataset": "ausgrid_intervals.csv.gz",
+  "quality": {
+    "Missing fields": 0,
+    "Invalid timestamps": 0,
+    "Duplicate household/UTC keys": 0,
+    "Non-finite meter values": 0,
+    "Negative meter values": 0,
+    "Off-grid timestamps": 0,
+    "Rows": 15640560,
+    "Partial or repeated-slot days": 0,
+    "Expected household-days excluding DST dates": 327000,
+    "Entirely absent household-days": 1155,
+    "Households": 300
+  },
+  "season": {
+    "solar_kwh": {
+      "Autumn": 5.298872922548178,
+      "Spring": 6.731177311808004,
+      "Summer": 6.938692551916686,
+      "Winter": 4.338738924606202
+    },
+    "load_kwh": {
+      "Autumn": 16.81535546827053,
+      "Spring": 16.3976363209006,
+      "Summer": 17.001493854003236,
+      "Winter": 22.623967818095966
+    }
+  },
+  "peaks": {
+    "solar_kwh": "12:00",
+    "load_kwh": "18:00"
+  },
+  "weekday_kwh": 17.951770765071732,
+  "weekend_kwh": 18.9375793315447,
+  "daily_median": {
+    "solar_kwh": 4.8149999999999995,
+    "load_kwh": 15.886999999999999
+  },
+  "daily_p99": {
+    "solar_kwh": 25.548119999999994,
+    "load_kwh": 54.68755999999998
+  },
+  "surplus_fraction": 0.19793057281836457,
+  "mean_daily_surplus": 2.6421322223756696,
+  "correlation": 0.05192679488974222,
+  "within_correlation": -0.1183451708953038,
+  "tails": {
+    "zero": {
+      "load_kwh": 29696,
+      "solar_kwh": 8466059
+    },
+    "positive": {
+      "load_kwh": 15610864,
+      "solar_kwh": 7174501
+    },
+    "high flags": {
+      "load_kwh": 1406364,
+      "solar_kwh": 3991
+    },
+    "zero share (%)": {
+      "load_kwh": 0.18986532451523475,
+      "solar_kwh": 54.12887390221322
+    },
+    "high share of positive (%)": {
+      "load_kwh": 9.008879969744147,
+      "solar_kwh": 0.05562756211198521
+    }
+  },
+  "test_start_sydney": "2012-07-01",
+  "metrics": [
+    {
+      "Period": "Validation",
+      "Method": "Linear regression",
+      "Target": "Gross solar",
+      "Intervals": 5201424,
+      "MAE": 0.06346711980345145,
+      "RMSE": 0.14481960458065724
+    },
+    {
+      "Period": "Validation",
+      "Method": "Linear regression",
+      "Target": "Household load",
+      "Intervals": 5201424,
+      "MAE": 0.23578022940309554,
+      "RMSE": 0.3867933134939406
+    },
+    {
+      "Period": "Validation",
+      "Method": "Weekly persistence",
+      "Target": "Gross solar",
+      "Intervals": 5201424,
+      "MAE": 0.06331985590518255,
+      "RMSE": 0.16036662971722168
+    },
+    {
+      "Period": "Validation",
+      "Method": "Weekly persistence",
+      "Target": "Household load",
+      "Intervals": 5201424,
+      "MAE": 0.22537077616586043,
+      "RMSE": 0.44178088339252536
+    },
+    {
+      "Period": "Test",
+      "Method": "Linear regression",
+      "Target": "Gross solar",
+      "Intervals": 5146896,
+      "MAE": 0.06122637408804856,
+      "RMSE": 0.14007387660492154
+    },
+    {
+      "Period": "Test",
+      "Method": "Linear regression",
+      "Target": "Household load",
+      "Intervals": 5146896,
+      "MAE": 0.2361448912038729,
+      "RMSE": 0.38888195036646606
+    },
+    {
+      "Period": "Test",
+      "Method": "Weekly persistence",
+      "Target": "Gross solar",
+      "Intervals": 5146896,
+      "MAE": 0.05925997730053026,
+      "RMSE": 0.15301651252883222
+    },
+    {
+      "Period": "Test",
+      "Method": "Weekly persistence",
+      "Target": "Household load",
+      "Intervals": 5146896,
+      "MAE": 0.22519904874997065,
+      "RMSE": 0.4473075513373523
+    }
+  ]
+}
