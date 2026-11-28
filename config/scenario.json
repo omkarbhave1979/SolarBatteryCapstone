@@ -20,7 +20,7 @@
     "discharge_ac_limit_kw": 5.0,
     "charge_efficiency": 0.95,
     "discharge_efficiency": 0.95,
-    "terminal_soc_policy": "equal_to_initial",
+    "terminal_soc_policy": "target_configured_initial_with_penalty",
     "grid_charging": true,
     "battery_export": false
   }

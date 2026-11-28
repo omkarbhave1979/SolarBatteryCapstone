@@ -13,7 +13,7 @@ UC Berkeley ML capstone data preparation. The two prediction targets are half-ho
 | solar_kwh | Gross PV energy during the interval |
 | load_kwh | General consumption plus separately metered controlled load where present |
 
-These are meter targets. Historical weather features, trained models and the battery optimizer are pending. For time-based splits and lags, sort within household by timestamp and check for gaps. Split by time before fitting transforms. For dispatch, convert interval starts to Australia/Sydney for tariff windows and multiply charge/discharge kW by 0.5 hours to obtain interval kWh.
+These are meter targets. The final pipeline uses meter and calendar features for forecasting and simulates day-ahead dispatch. See the [forecast notebook](notebooks/02_forecast_modeling.ipynb) and [dispatch notebook](notebooks/03_battery_dispatch.ipynb). Historical weather features are pending. For time-based splits and lags, sort within household by timestamp and check for gaps. Split by time before fitting transforms. For dispatch, convert interval starts to Australia/Sydney for tariff windows and multiply charge/discharge kW by 0.5 hours to obtain interval kWh.
 
 ## Reproduce the meter preparation
 
@@ -40,7 +40,7 @@ The pilot requests 00 UTC cycles from 30 June through 2 July 2012, lead hours 12
 
 ## Dispatch scenario
 
-[Scenario configuration](config/scenario.json) defines illustrative, flat export and weekday time-of-use import rates in AUD. Weekdays use ISO numbering and the peak is 16:00–21:00 Sydney time. All modeled household load uses this scenario tariff. Holiday overrides, actual controlled-load rates, fixed charges, and battery degradation are outside the scenario. The simulated battery has a 10 kWh nameplate, 1–9 kWh state-of-charge bounds, 5 kW AC charge and discharge limits, 95% efficiency in each direction, and 5 kWh initial and terminal charge. Grid charging and direct PV export are allowed. Battery export is disabled. Dispatch should prevent simultaneous charge/discharge and import/export.
+[Scenario configuration](config/scenario.json) defines illustrative, flat export and weekday time-of-use import rates in AUD. Weekdays use ISO numbering and the peak is 16:00–21:00 Sydney time. All modeled household load uses this scenario tariff. Holiday overrides, actual controlled-load rates, fixed charges, and battery degradation are outside the scenario. The simulated battery has a 10 kWh nameplate, 1–9 kWh state-of-charge bounds, 5 kW AC charge and discharge limits, 95% efficiency in each direction, and 5 kWh initial charge and end-of-day target. Grid charging and direct PV export are allowed. Battery export is disabled. Dispatch should prevent simultaneous charge/discharge and import/export.
 
 ## Weekly persistence baseline
 

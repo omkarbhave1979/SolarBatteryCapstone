@@ -1,76 +1,122 @@
-### Solar and household load forecasting with battery dispatch
+# Can better solar forecasts cut household electricity costs?
 
 **Author**  
-Omkar Bhave · UC Berkeley ML Capstone · Assignment 20.1
+Omkar Bhave · UC Berkeley Machine Learning and AI Capstone · Module 24 Final Report
 
-#### Executive summary
+## Executive summary
 
-Across 300 Ausgrid homes and 15.64 million half-hour readings, average rooftop solar generation peaked at noon and household demand peaked at 18:00 Sydney time. Solar exceeded demand in 19.8% of half-hours. On the held-out year, a simple day-ahead linear regression reduced RMSE for both targets relative to weekly persistence. Persistence had lower MAE for both targets.
+In a simulation of 300 Australian homes, a battery scheduled with day-ahead forecasts reduced electricity energy charges by **5.6%** compared with no battery. A simpler schedule based on the previous week saved almost as much. The more accurate forecast reduced the simulated cost by only **AUD 0.002 per household-day** compared with that simpler approach, and the uncertainty interval included zero. For a pilot, weekly persistence is a practical starting point.
 
-#### Rationale
+## Rationale
 
-Rooftop solar can peak hours before household demand. A battery can shift some of that energy into the evening, when the household may otherwise buy electricity from the grid. Day-ahead forecasts can help decide when to charge and when to reserve energy for the evening peak.
+The homes in this study generated the most solar electricity around noon and used the most electricity around 6 p.m. A battery can store energy for later use. A schedule can help decide when to charge and when to save that energy for hours when electricity costs more.
 
-#### Research Question
+## Research question
 
-How do half-hourly gross solar generation and total household electricity use vary across the clock, seasons, and homes? How accurately can a simple regression using calendar information and recent meter history forecast the next day's 48 intervals for homes already in the meter panel?
+How accurately can we predict tomorrow’s solar generation and household demand in half-hour intervals? Under an illustrative Sydney tariff, does a battery using those predictions reduce energy charges compared with a battery scheduled from the previous week’s readings or a home without a battery?
 
-#### Data Sources
+## What the project delivers
 
-The analysis uses Ausgrid's gross-metered solar homes in New South Wales from 1 July 2010 through 30 June 2013. The original cohort required a complete first year and excluded some early high- and low-performing households. The results describe this cohort and historical period. See [data attribution and file sizes](data/sample/ATTRIBUTION.md).
+At 6 p.m. Sydney time, the system estimates how much rooftop solar electricity a household will generate and how much electricity it will use in each of the next day’s 48 half-hour periods. Those estimates feed a battery scheduler. For each period, the scheduler recommends charging, supplying the home from the battery, or staying idle. It also reports how much power to move and how much energy the battery is expected to hold afterward.
 
-The repository includes a 103,387-byte real sample for an offline run. The [full processed export](data/processed/ausgrid_intervals.csv.gz) is included and can also be regenerated from the source archive. Weather forecasts were unavailable for analysis. See [provenance, preparation, and weather pilot notes](DATA_PREPARATION.md).
+The study evaluates two decisions separately. First, does the forecasting model improve on simply reusing the previous week’s meter readings? Second, does that improvement lead to lower electricity charges when both forecasting methods use the same battery and tariff?
 
-#### Methodology
+## Data sources
 
-- Convert interval-ending labels to UTC interval starts and recover Sydney wall-clock time for aggregation and feature engineering. Define total demand as general consumption plus controlled load where applicable. Exclude six daylight-saving transition dates and apply the source quality rules. Leave missing readings unfilled.
-- Audit duplicates, invalid values and missing household-days against the expected grid. Use complete days for profiles, seasonal comparisons and correlations. Flag upper-tail readings by household and target using 1.5 times the IQR above Q3 on positive readings. Retain flagged values for analysis and modeling.
-- Fit one pooled ordinary least squares regression for both targets. Features are both meter targets from the same Sydney half-hour seven days earlier, daily and annual cyclic calendar features, and a weekend indicator. These inputs are available by 18:00 on the day before delivery. Clip negative forecasts to zero.
-- Train on July 2010–June 2011, validate on July 2011–June 2012, and test on July 2012–June 2013. Use the same complete household-days with complete weekly lags for regression and weekly persistence. No tuning was performed. See [validation and test results](results/assignment_20_1_full.json).
+The study uses 15.64 million half-hour meter readings from 300 Ausgrid homes in New South Wales, from July 2010 through June 2013. The homes had gross solar metering. The [data preparation notes](DATA_PREPARATION.md) describe the data and how to regenerate the processed file. See [Ausgrid attribution](data/sample/ATTRIBUTION.md) for source and license details.
 
-#### Results
+The exploratory analysis found that solar generation exceeded household demand in about **one in five half-hours**. That gap explains why there is a potential role for storage. Typical timing and energy use vary by season and household, so the scheduler uses a separate daily profile for each home. See the [exploratory notebook](notebooks/assignment_20_1.ipynb).
 
-- **Coverage.** The export contains 15,640,560 half-hour rows. There were zero duplicate keys, missing fields, non-finite readings, negative readings, off-grid timestamps, or partial household-days. After the six DST exclusions, 1,155 of 327,000 expected household-days (0.35%) were entirely absent. Gaps were most concentrated in early 2013.
-- **Timing and surplus.** The average solar and demand peaks were six hours apart. Average daily load was 17.95 kWh on weekdays and 18.94 kWh on weekends. Summing only positive half-hour PV-minus-load margins gives 2.64 kWh per household-day on average, before any battery power, capacity, efficiency, or operating constraints.
-- **Seasonality.** Average daily PV was 6.94 kWh in summer and 4.34 in winter. Average daily demand was 17.00 kWh in summer and 22.62 in winter. The clock-by-month plots show stronger winter morning and evening demand peaks.
-- **Relationships and extremes.** Pooled daily solar and load had a Pearson correlation of 0.052. After subtracting each home's own mean from each target, it was −0.118. Median daily PV and load were 4.81 and 15.89 kWh, with 99th percentiles of 25.55 and 54.69 kWh. Solar was zero in 54.1% of half-hours. The per-home upper fence flagged 0.056% of positive PV readings and 9.01% of positive load readings, consistent with a much heavier upper tail in household demand by this diagnostic.
+## Methodology
 
-**Held-out year** · 5,146,896 eligible intervals per target. Errors are in kWh per half-hour.
+- **Prepare the meter data.** Convert readings to consistent half-hour intervals, combine household demand channels, and check for invalid readings, gaps, and duplicates. Compare forecasts on the same household-days with complete readings and the required history.
+- **Compare day-ahead forecasts.** Use the matching half-hour from the previous week as a benchmark. Compare ordinary linear regression, Ridge regression, and gradient boosting using meter history and the calendar. Test parameter combinations on three time-ordered folds, select the model on the following year, and evaluate on the final year.
+- **Simulate the battery.** At 6 p.m. Sydney time, plan for the following day. Replay the schedule against actual meter readings as they arrive, respecting the battery’s limits. Compare energy charges on the same days under one illustrative tariff. Account for energy left in the battery so one strategy does not benefit simply by ending with a lower charge.
 
-| Target | Regression MAE | Weekly persistence MAE | Regression RMSE | Weekly persistence RMSE |
-| --- | ---: | ---: | ---: | ---: |
-| Gross solar | 0.0612 | 0.0593 | 0.1401 | 0.1530 |
-| Household load | 0.2361 | 0.2252 | 0.3889 | 0.4473 |
+## Results
 
-Regression incurred 3.3% higher solar MAE and 4.9% higher load MAE. It had 8.5% lower solar RMSE and 13.1% lower load RMSE. The error profiles show that the MAE comparison varies by time of day. For load, regression improved around the evening peak but increased errors around midnight. For solar, small errors near the edges of the day contributed to higher all-day MAE.
+### How accurate were the forecasts?
 
-#### Next steps
+| Forecast measure (kWh per half-hour) | Previous week | Gradient boosting |
+| --- | ---: | ---: |
+| Solar average absolute error (MAE) | 0.059 | 0.054 |
+| Solar error with extra weight on large misses (RMSE) | 0.153 | 0.129 |
+| Demand average absolute error (MAE) | 0.225 | 0.207 |
+| Demand error with extra weight on large misses (RMSE) | 0.448 | 0.359 |
 
-Align historical weather forecast inputs by issue time and lead time, and validate availability before using them at the decision cutoff. Compare forecast errors in daylight and tariff peak windows, then use held-out predictions to evaluate the [illustrative battery scenario](config/scenario.json).
+Gradient boosting reduced errors on both targets compared with the previous week. It improved RMSE by about **15% for solar** and **20% for demand**. During the expensive weekday evening window, demand RMSE fell from 0.526 to 0.418 kWh per half-hour. MAE describes the average size of a miss, while RMSE gives large misses more weight. The models were selected before the final year was scored.
 
-#### Outline of project
+### Did better forecasts lower simulated costs?
 
-- [Executed Assignment 20.1 notebook](notebooks/assignment_20_1.ipynb) with seven figures, written interpretations, and the baseline evaluation
-- [Full-data numerical results](results/assignment_20_1_full.json)
-- [Source preparation, meter definitions, and dispatch assumptions](DATA_PREPARATION.md)
+The comparison covers the same **106,585 household-days** across all three strategies. Costs are net energy charges after export credits and, for the battery strategies, an adjustment for stored energy.
 
-Run from the repository root using Python 3.12 or newer. The reported run used Python 3.14.7. Both commands below keep the submitted full-run notebook outputs intact.
+| Strategy | Total cost (AUD) | Savings versus no battery (AUD) |
+| --- | ---: | ---: |
+| No battery | 500,225 | — |
+| Battery scheduled from the previous week | 472,377 | 27,848 |
+| Battery scheduled with gradient boosting | 472,175 | 28,050 |
+
+The battery delivered most of the savings. The estimated extra savings from gradient boosting were **AUD 0.002 per household-day**. To gauge how much that difference might vary, we repeatedly resampled pairs of results in blocks of dates, keeping each strategy on the same households and days. The resulting 95% interval was about **AUD −0.005 to +0.008 per household-day**. It includes zero, so the backtest gives no clear evidence that gradient boosting cuts energy charges further under this tariff. See the [dispatch notebook](notebooks/03_battery_dispatch.ipynb).
+
+![Held-out forecast errors and simulated costs](results/full_implementation.png)
+
+### What the schedule looks like
+
+This historical example shows one Ausgrid household on 23 July 2012 using the previous week’s readings. Run the dispatch notebook below to see tomorrow’s Sydney timeline. Above zero means charging, below zero means drawing energy from the battery, and zero means idle. The shaded window is the weekday peak tariff. The power-supplied panel shows scheduled grid imports and battery discharge. Both can occur in the same half-hour. Grid imports can also charge the battery. The last panel shows planned stored energy.
+
+![Next-day charge and discharge schedule](results/next_day_schedule.png)
+
+## Scope and limitations
+
+The estimates describe this historical Ausgrid cohort under an illustrative Sydney tariff. The study evaluates energy charges. Battery purchase and installation costs, degradation, and fixed charges were outside the cost calculation, so the savings figures cannot establish payback. Weather forecasts were unavailable for this run. Changes in weather, tariffs, or household usage can affect how a current installation performs.
+
+## Next steps
+
+1. **Pilot the previous-week schedule first.** Generate daily recommendations from current meter readings and actual tariffs before connecting to a physical battery.
+2. **Measure the incremental value of the model.** Compare both schedules on the same homes and dates. Track energy charges, peak grid imports, forecast errors, and battery use. Test whether weather forecasts available by 6 p.m. improve the result.
+3. **Check the economics before rollout.** Include installation costs, battery wear, and fixed charges in the payback assessment.
+
+## Outline of project
+
+1. [Data preparation and exploratory analysis](notebooks/assignment_20_1.ipynb)
+2. [Forecast modeling, cross-validation, and evaluation](notebooks/02_forecast_modeling.ipynb)
+3. [Battery dispatch, cost comparison, and uncertainty](notebooks/03_battery_dispatch.ipynb)
+
+### Generate a schedule for a date
+
+Run the schedule cell in the [battery dispatch notebook](notebooks/03_battery_dispatch.ipynb#generate-a-24-hour-schedule) to generate a fresh chart for a Sydney delivery date, household ID, and expected battery energy at midnight. The command below uses the same inputs to export a CSV.
+
+```sh
+python src/schedule_day.py 2012-07-23 --household 1 --starting-kwh 5 \
+  --meter-csv data/sample/ausgrid_sample.csv --output next-day-schedule.csv
+```
+
+The CSV lists forecast solar and demand, the recommended action, signed battery power, and planned stored energy for each half-hour. Positive power charges the battery and negative power supplies the home.
+
+For an upcoming date, pass a current meter CSV in the processed Ausgrid format. The default weekly forecast needs the complete day seven days before delivery. The optional `--forecast validated_model` also needs the complete day two days before delivery and trains using the bundled historical archive by default. The bundled archive covers 2010–2013. When no current meter file is supplied, the notebook displays a clearly labeled illustration using a historical profile on the requested date’s timeline. With a supplied file, it identifies any missing dates. Dates with a daylight-saving clock change are outside the 48-slot implementation.
+
+### Reproduce the results
+
+Use Python 3.14. The full run uses the processed dataset included in the repository. Run these commands from the repository root.
 
 ```sh
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install -r requirements.txt
-AUSGRID_MODE=sample jupyter execute --timeout=600 --output=assignment_20_1_sample notebooks/assignment_20_1.ipynb
+OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 python src/run_capstone.py
+python src/plot_capstone.py results/full_implementation.json results/full_implementation.png
+python src/plot_schedule.py
 ```
 
-Run the full analysis against the included processed export. The notebook uses temporary disk space to group intervals by household.
+The [machine-readable results](results/full_implementation.json) include each grid trial, validation and holdout metrics, and the dispatch comparison. The notebooks include saved outputs and can be rerun with Jupyter. For a quick run, use the included two-home sample.
 
 ```sh
-AUSGRID_MODE=full jupyter execute --timeout=600 --output=assignment_20_1_reproduced notebooks/assignment_20_1.ipynb
+OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 python src/run_capstone.py \
+  --meter-csv data/sample/ausgrid_sample.csv \
+  --validation-start 2012-07-17 --test-start 2012-07-23 \
+  --output /tmp/solar-capstone-sample.json
 ```
 
-Set `AUSGRID_SAVE_SUMMARY=1` if you also want to write the corresponding JSON summary under `results/`. When run interactively, the notebook uses the full export if present and otherwise defaults to the real sample. To rebuild the processed export from the source archive, see [data preparation](DATA_PREPARATION.md).
+## Contact and further information
 
-##### Contact and Further Information
-
-Omkar Bhave · UC Berkeley ML Capstone. For source and licensing details, see [data attribution](data/sample/ATTRIBUTION.md).
+Omkar Bhave · UC Berkeley Machine Learning and AI Capstone

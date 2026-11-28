@@ -12,3 +12,6 @@ __pycache__/
 .ipynb_checkpoints/
 notebooks/assignment_20_1_sample.ipynb
 notebooks/assignment_20_1_reproduced.ipynb
+!results/full_implementation.json
+!results/full_implementation.png
+!results/next_day_schedule.png
